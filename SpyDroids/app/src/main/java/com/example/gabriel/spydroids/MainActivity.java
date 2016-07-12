@@ -1,60 +1,56 @@
 package com.example.gabriel.spydroids;
 
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View;
-import android.widget.Button;
-import android.widget.AdapterView;
-import android.widget.TextView;
+//
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 public class MainActivity extends AppCompatActivity {
+
+    public class StartScreenView extends View
+    {
+        public StartScreenView(Context context)
+        {
+            super(context);
+            Paint white;
+            white = new Paint();
+            white.setColor(Color.WHITE);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setTitle("SpyDroids");
+        //turn title off
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        //Android variables
-        final Button buttonPlay = (Button) findViewById(R.id.button_play);
+        //set to full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //Logic variables
+        // Get a Display object to access screen details
+        Display display = getWindowManager().getDefaultDisplay();
+        // Load the resolution into a Point object
+        Point size = new Point();
+        display.getSize(size);
 
+        setContentView(new GamePanel(this, size.x, size.y));
+    }
 
-        /*@Override
-        public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
-        {
-            Context c = view.getContext();
-
-            TextView textViewItem = ((TextView) view.findViewById(R.id.activityMainTextViewItem));
-
-            switch(textViewItem.getText().toString())
-            {
-                case "Linear Layout": ChangeActivity(c, LinearLayoutActivity.class); break;
-                case "Relative Layout": ChangeActivity(c, RelativeLayoutActivity.class); break;
-                case "Arkanoid": ChangeActivity(c, StartScreen.class); break;
-                case "Intent": ChangeActivity(c, IntentActivity.class); break;
-                case "Broadcast Receiver": ChangeActivity(c, BroadcastActivity.class); break;
-                case "Notification": ChangeActivity(c, NotificationActivity.class); break;
-                case "Alarm": ChangeActivity(c, AlarmActivity.class); break;
-                case "Service": ChangeActivity(c, ServiceActivity.class); break;
-                case "Handler": ChangeActivity(c, HandlerChild.class); break;
-                case "SMS": ChangeActivity(c, SMSActivity.class); break;
-                case "Audio": ChangeActivity(c, AudioActivity.class); break;
-                case "Video": ChangeActivity(c, VideoActivity.class); break;
-                case "Camera": ChangeActivity(c, CameraActivity.class); break;
-                case "Socket TCP Client": ChangeActivity(c, CalculatorActivity.class); break;
-                case "HTTP Client": ChangeActivity(c, LoginActivity.class); break;
-            }
-        }
-
-        //Trash buttons logic
-        /*buttonPlay.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v){
-
-            }
-        });*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_game, menu);
+        return true;
     }
 
 
