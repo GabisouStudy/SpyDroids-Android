@@ -26,12 +26,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     private int gameState;
 
-    private boolean touch = false;
-
     private MainThread thread;
 
     private Background bg;
     private FullScreen screen;
+
+    private Button playButton;
+
+    private float xT;
+    private float yT;
+    private boolean touch = false;
+
     //private Player player;
 
     //private Item[] items = new Item[5];
@@ -91,6 +96,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         screen = new FullScreen(screens, gameState);
 
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.bg_menu_main));
+
+        playButton = new Button(BitmapFactory.decodeResource(getResources(), R.drawable.button_play));
+        playButton.setPosition(26,15);
+
         /*bg.setVector(-5);
 
         player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.hand_player), 40, 60, (WIDTH - 200), itemsSprites);
@@ -130,8 +139,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        float x = event.getX();
-        float y = event.getY();
+        xT = event.getX();
+        yT = event.getY();
 
         //player.setPosition(((int) (x * scaleIndexX)), ((int) (y * scaleIndexY)));
 
@@ -152,15 +161,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    public boolean touch(GameObject g){
+        if(xT < g.x + g.width && xT > g.x &&yT < g.y + g.height && yT > g.y && touch){
+            return true;
+        }
+        return false;
+    }
+
     public void update()
     {
         switch (gameState){
             case 0:
-                if(touch){
+
+
+                /*if(touch){
                     startGame();
                     gameState = 1;
                     screen.setId(1);
-                }
+                }*/
                 //bg.update();
                 break;
 
@@ -186,8 +204,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         if (canvas != null) {
             final int savedState = canvas.save();
-            canvas.scale(scaleFactorX*2, scaleFactorY*2);
+            canvas.scale(scaleFactorX, scaleFactorY);
             bg.draw(canvas);
+
+            playButton.draw(canvas);
 
             screen.draw(canvas);
 
