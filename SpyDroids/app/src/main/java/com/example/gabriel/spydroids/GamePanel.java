@@ -43,10 +43,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private float yT;
     private boolean touch = false;
 
+    private long start;
+    private float deltaTime;
 
     //
     private int score = 0;
-    private int timer = 0;
+    private float timer = 0;
 
     //
     private Briefcase briefcase;
@@ -106,6 +108,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         //we can safely start the game loop
         thread.setRunning(true);
         thread.start();
+        start = System.nanoTime();
 
         gameState = 0;
 
@@ -180,17 +183,26 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    public boolean touched(GameObject g){
+   /* public float deltaTime(){
+
+    }*/
+
+    /*public boolean touched(GameObject g){
         if(xT < g.x + g.width && xT > g.x && yT < g.y + g.height && yT > g.y && touch){
             return true;
         }
         return false;
-    }
+    }*/
 
     public void update()
     {
         //Log.d("GABRILLLLLLLLL", " " + (int)(xT / scaleFactorX));
         pointer.setPosition((int)(xT / scaleFactorX), (int)(yT / scaleFactorY));
+
+        long time = System.nanoTime();
+        deltaTime = (float)((time - start)/1000000);//1000.
+        start = time;
+
         switch (gameState){
             case 0:
                 if(touch && collision(playButton, pointer)){
@@ -202,7 +214,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             case 1:
                 //game
                 briefcase.update();
-                timer++;
+                timer += 1 * (deltaTime/1000);
                 break;
 
             case 2:
@@ -247,7 +259,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             paint.setColor(Color.BLACK);
             paint.setTextSize(70);
 
-            canvas.drawText(("Score: " + score + " || Timer: " + timer), 10, 80, paint);
+            canvas.drawText(("Score: " + score + " || Timer: " + (int)timer), 10, 80, paint);
 
             //screen.draw(canvas);
 
