@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.style.LineHeightSpan;
 import android.util.Log;
@@ -23,6 +25,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     private int screenX;
     private int screenY;
+    private float scaleFactorX;
+    private float scaleFactorY;
 
     private int gameState;
 
@@ -31,11 +35,21 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
     private Background bg;
     private FullScreen screen;
 
+    private Pointer pointer;
+
     private Button playButton;
 
     private float xT;
     private float yT;
     private boolean touch = false;
+
+
+    //
+    private int score = 0;
+    private int timer = 0;
+
+    //
+    private Briefcase briefcase;
 
     //private Player player;
 
@@ -64,6 +78,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         screenX = getResources().getDisplayMetrics().widthPixels;
         screenY = getResources().getDisplayMetrics().heightPixels;
+        scaleFactorX = screenX / (WIDTH * 1.f);
+        scaleFactorY = screenY / (HEIGHT * 1.f);
 
         Log.d("RESOLUTION: ", screenX + " " + screenY);
     }
@@ -95,10 +111,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         screen = new FullScreen(screens, gameState);
 
+        pointer = new Pointer(BitmapFactory.decodeResource(getResources(), R.drawable.flashlight));
+
         bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.bg_menu_main));
 
         playButton = new Button(BitmapFactory.decodeResource(getResources(), R.drawable.button_play));
-        playButton.setPosition(26,15);
+        playButton.setPosition(960,540);
 
         /*bg.setVector(-5);
 
@@ -142,6 +160,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         xT = event.getX();
         yT = event.getY();
 
+        //Log.d("DAJSDJJSDO", xT + " " + yT);
         //player.setPosition(((int) (x * scaleIndexX)), ((int) (y * scaleIndexY)));
 
         if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
@@ -161,8 +180,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    public boolean touch(GameObject g){
-        if(xT < g.x + g.width && xT > g.x &&yT < g.y + g.height && yT > g.y && touch){
+    public boolean touched(GameObject g){
+        if(xT < g.x + g.width && xT > g.x && yT < g.y + g.height && yT > g.y && touch){
             return true;
         }
         return false;
@@ -170,36 +189,33 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
+        //Log.d("GABRILLLLLLLLL", " " + (int)(xT / scaleFactorX));
+        pointer.setPosition((int)(xT / scaleFactorX), (int)(yT / scaleFactorY));
         switch (gameState){
             case 0:
-
-
-                /*if(touch){
-                    startGame();
+                if(touch && collision(playButton, pointer)){
                     gameState = 1;
-                    screen.setId(1);
-                }*/
-                //bg.update();
+                    briefcase = new Briefcase(BitmapFactory.decodeResource(getResources(), R.drawable.briefcase));
+                }
                 break;
 
             case 1:
                 //game
+                briefcase.update();
+                timer++;
                 break;
 
             case 2:
                 //gameover
                 break;
         }
-
-
     }
 
 
     @Override
     public void draw(Canvas canvas){
         super.draw(canvas);
-        final float scaleFactorX = screenX / (WIDTH * 1.f);
-        final float scaleFactorY = screenY / (HEIGHT * 1.f);
+
 
 
         if (canvas != null) {
@@ -207,20 +223,37 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback
             canvas.scale(scaleFactorX, scaleFactorY);
             bg.draw(canvas);
 
-            playButton.draw(canvas);
+            switch (gameState) {
+                case 0:
+                    playButton.draw(canvas);
+                    break;
 
-            screen.draw(canvas);
+                case 1:
+                    //game
+                    briefcase.draw(canvas);
+                    break;
 
-            /*if(gameState == 1) {
-                for (int i = 0; i <= 4; i++) {
-                    items[i].draw(canvas);
-                    requesters[i].draw(canvas);
-                }
+                case 2:
+                    //gameover
+                    break;
             }
 
-            if(gameState != 0) {
-                player.draw(canvas);
-            }*/
+            if(touch) {
+                pointer.draw(canvas);
+            }
+
+            Paint paint = new Paint();
+
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(70);
+
+            canvas.drawText(("Score: " + score + " || Timer: " + timer), 10, 80, paint);
+
+            //screen.draw(canvas);
+
+            //  0   1   2
+            //  3  [=]  4
+            //  5   6   7
 
             canvas.restoreToCount(savedState);
         }
