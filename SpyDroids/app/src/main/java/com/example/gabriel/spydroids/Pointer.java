@@ -11,26 +11,37 @@ import android.util.Log;
  * Created by Gabriel.Souza on 22/07/2016.
  */
 public class Pointer extends GameObject {
-    private Bitmap sprite;
+    private Bitmap sprite = null;
+    private int color;
+    private int opacity;
     public Pointer(Bitmap res){
         sprite = res;
         width = sprite.getWidth();
         height= sprite.getHeight();
     }
+    public Pointer(int w, int h, int c, int a){
+        width = w;
+        height = h;
+        color = c;
+        opacity = a;
+    }
     public void setPosition(int pX, int pY)
     {
-        x = (pX - width/2);
-        y = (pY - height/2);
+        x = (pX);
+        y = (pY);
     }
     public void draw(Canvas canvas){
-        /*Rect r = new Rect(x, y, x + width, y + height);
-        Paint p = new Paint();
-        // smooths
-        p.setAntiAlias(true);
-        p.setColor(Color.BLACK);
-        p.setStyle(Paint.Style.STROKE);
-        p.setStrokeWidth(4.5f);
-        canvas.drawRect(r, p);*/
-        canvas.drawBitmap(sprite, (x), (y), null);
+        if(sprite != null) {
+            canvas.drawBitmap(sprite, (((int) x) - width / 2), (((int) y) - height / 2), null);
+        }else {
+            Rect r = new Rect(((int)x)-(width/2), ((int)y)-(height/2), (((int)x) + width/2), (((int)y) + height/2));
+            Paint p = new Paint();
+            // smooths
+            p.setAntiAlias(true);
+            p.setColor(color);
+            p.setStyle(Paint.Style.FILL);
+            p.setAlpha(opacity);
+            canvas.drawRect(r, p);
+        }
     }
 }

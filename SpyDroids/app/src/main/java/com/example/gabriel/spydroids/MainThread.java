@@ -2,11 +2,10 @@ package com.example.gabriel.spydroids;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
-
 /**
  * Created by Gabriel.Souza on 08/07/2016.
  */
-public class MainThread extends Thread {
+public class MainThread extends Thread implements Runnable {
     private int FPS = 30;
     private double averageFPS;
     private SurfaceHolder surfaceHolder;
@@ -34,11 +33,13 @@ public class MainThread extends Thread {
             startTime = System.nanoTime();
             canvas = null;
 
+
+
             //try locking the canvas for pixel editing
             try {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    this.gamePanel.update();
+                    this.gamePanel.run();
                     this.gamePanel.draw(canvas);
                 }
             } catch (Exception e) {
